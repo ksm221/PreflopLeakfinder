@@ -1,0 +1,27 @@
+<Window x:Class="PokerStudy.Wpf.MainWindow" xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation" xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml" Title="Preflop Leakfinder" Height="760" Width="1400">
+<Grid Margin="12"><Grid.RowDefinitions><RowDefinition Height="Auto"/><RowDefinition Height="Auto"/><RowDefinition Height="*"/><RowDefinition Height="Auto"/></Grid.RowDefinitions>
+<StackPanel Orientation="Horizontal"><Button Width="120" Margin="0,0,8,0" Click="Import_Click">Import Folder</Button><Button Width="100" Margin="0,0,8,0" Click="Refresh_Click">Refresh</Button><Button Width="100" Margin="0,0,8,0" Click="Cancel_Click">Cancel</Button><Button Width="120" Click="ClearData_Click">Clear Data</Button><TextBlock Margin="20,4,0,0" Text="{Binding StatusText}"/></StackPanel>
+<Grid Grid.Row="1" Margin="0,12"><Grid.ColumnDefinitions><ColumnDefinition Width="160"/><ColumnDefinition Width="160"/><ColumnDefinition Width="260"/><ColumnDefinition Width="*"/></Grid.ColumnDefinitions>
+<ComboBox x:Name="FormatFilter" SelectionChanged="FilterChanged"><ComboBoxItem Content="All"/><ComboBoxItem Content="HU"/><ComboBoxItem Content="3W"/></ComboBox>
+<ComboBox x:Name="PositionFilter" Grid.Column="1" Margin="8,0" SelectionChanged="FilterChanged"><ComboBoxItem Content="All"/><ComboBoxItem Content="BTN"/><ComboBoxItem Content="SB"/><ComboBoxItem Content="BB"/></ComboBox>
+<TextBox x:Name="SearchBox" Grid.Column="2" Margin="8,0" TextChanged="FilterChanged" ToolTip="Hand ID / starting hand / spot"/>
+<ComboBox x:Name="GtoFilter" Grid.Column="3" Width="180" Margin="8,0" SelectionChanged="FilterChanged">
+ <ComboBoxItem Content="All GTO Results"/>
+ <ComboBoxItem Content="Deviation Only"/>
+</ComboBox>
+<TextBlock x:Name="CountText" Grid.Column="3" VerticalAlignment="Center" Margin="196,0,8,0"/>
+</Grid>
+<DataGrid x:Name="HandsGrid" Grid.Row="2" AutoGenerateColumns="False" IsReadOnly="True" EnableRowVirtualization="True" EnableColumnVirtualization="True" ScrollViewer.CanContentScroll="True" RowDetailsVisibilityMode="Collapsed" MouseDoubleClick="HandsGrid_MouseDoubleClick">
+<DataGrid.Columns><DataGridTextColumn Header="Hand ID" Binding="{Binding HandId}" Width="260"/><DataGridTextColumn Header="Date" Binding="{Binding PlayedAtUtc}" Width="150"/><DataGridTextColumn Header="Format" Binding="{Binding Format}" Width="70"/><DataGridTextColumn Header="Pos" Binding="{Binding HeroPosition}" Width="60"/><DataGridTextColumn Header="Stack BB" Binding="{Binding StackBb,StringFormat=0}" Width="80"/><DataGridTextColumn Header="Hand" Binding="{Binding StartingHand}" Width="70"/><DataGridTextColumn Header="Action" Binding="{Binding HeroAction}" Width="90"/><DataGridTextColumn Header="Spot" Binding="{Binding Spot}" Width="380"/><DataGridTextColumn Header="GTO" Binding="{Binding GtoVerdict}" Width="90"/><DataGridTextColumn Header="GTO Detail" Binding="{Binding GtoDetail}" Width="380"/></DataGrid.Columns>
+<DataGrid.RowDetailsTemplate>
+ <DataTemplate>
+  <Border Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="1" Padding="8" Margin="0,4">
+   <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Disabled" MaxHeight="420">
+    <TextBox Text="{Binding RawText, Mode=OneWay}" IsReadOnly="True" IsReadOnlyCaretVisible="True" BorderThickness="0" Background="Transparent" FontFamily="Consolas" FontSize="12" TextWrapping="NoWrap" AcceptsReturn="True"/>
+   </ScrollViewer>
+  </Border>
+ </DataTemplate>
+</DataGrid.RowDetailsTemplate>
+</DataGrid>
+<ProgressBar Grid.Row="3" Height="20" Margin="0,10,0,0" x:Name="Progress"/>
+</Grid></Window>

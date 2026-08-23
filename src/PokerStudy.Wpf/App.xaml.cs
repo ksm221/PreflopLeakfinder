@@ -1,0 +1,1 @@
+using System.Windows; namespace PokerStudy.Wpf; public partial class App:Application{}
