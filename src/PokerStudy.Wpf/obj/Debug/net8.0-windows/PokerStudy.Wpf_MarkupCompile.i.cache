@@ -4,16 +4,16 @@
 winexe
 C#
 .cs
-C:\Users\User\Desktop\PokerStudyPrototype-v0.7\proj\src\PokerStudy.Wpf\obj\Debug\net8.0-windows\
+C:\Users\User\Desktop\PreflopLeakFinder\PreflopLeakfinder\src\PokerStudy.Wpf\obj\Debug\net8.0-windows\
 PokerStudy.Wpf
 none
 false
 TRACE;DEBUG;NET;NET8_0;NETCOREAPP;WINDOWS;WINDOWS7_0;NET5_0_OR_GREATER;NET6_0_OR_GREATER;NET7_0_OR_GREATER;NET8_0_OR_GREATER;NETCOREAPP1_0_OR_GREATER;NETCOREAPP1_1_OR_GREATER;NETCOREAPP2_0_OR_GREATER;NETCOREAPP2_1_OR_GREATER;NETCOREAPP2_2_OR_GREATER;NETCOREAPP3_0_OR_GREATER;NETCOREAPP3_1_OR_GREATER;WINDOWS7_0_OR_GREATER
-C:\Users\User\Desktop\PokerStudyPrototype-v0.7\proj\src\PokerStudy.Wpf\App.xaml
+C:\Users\User\Desktop\PreflopLeakFinder\PreflopLeakfinder\src\PokerStudy.Wpf\App.xaml
 11407045341
 11845319371
 5640045161
-2171298114016
+217-715748655
 MainWindow.xaml;
 
 False

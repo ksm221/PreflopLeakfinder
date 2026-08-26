@@ -14,7 +14,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("PokerStudy.Wpf")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+cb116c96d014444e1bbff22e240fbee9767687ef")]
 [assembly: System.Reflection.AssemblyProductAttribute("PokerStudy.Wpf")]
 [assembly: System.Reflection.AssemblyTitleAttribute("PokerStudy.Wpf")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]
