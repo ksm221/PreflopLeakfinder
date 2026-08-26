@@ -72,6 +72,7 @@
                 <Grid.RowDefinitions>
                     <RowDefinition Height="Auto"/>
                     <RowDefinition Height="Auto"/>
+                    <RowDefinition Height="260"/>
                     <RowDefinition Height="*"/>
                 </Grid.RowDefinitions>
 
@@ -122,15 +123,51 @@
                     </StackPanel>
 
                     <StackPanel Grid.Column="2" Margin="8,0,0,0">
-                        <TextBlock Text="Most Frequent Deviation Hands" FontWeight="Bold" Margin="0,0,0,6"/>
-                        <DataGrid x:Name="HandStatsGrid" AutoGenerateColumns="False" IsReadOnly="True" Height="220">
+                        <TextBlock Text="Most Frequent Deviation Hands (double-click a row for hand IDs)" FontWeight="Bold" Margin="0,0,0,6"/>
+                        <DataGrid x:Name="HandStatsGrid"
+                                              ItemsSource="{Binding HandStats}"
+                                              AutoGenerateColumns="False"
+                                              IsReadOnly="True"
+                                              Height="220"
+                                              SelectionUnit="FullRow"
+                                              SelectionMode="Single"
+                                              RowDetailsVisibilityMode="Collapsed"
+                                              MouseDoubleClick="HandStatsGrid_MouseDoubleClick">
                             <DataGrid.Columns>
                                 <DataGridTextColumn Header="Hand" Binding="{Binding Hand}" Width="80"/>
                                 <DataGridTextColumn Header="Deviations" Binding="{Binding Count}" Width="90"/>
                             </DataGrid.Columns>
+
+                            <DataGrid.RowDetailsTemplate>
+                                <DataTemplate>
+                                    <StackPanel Margin="0,4">
+                                        <TextBlock Text="Click a Hand ID to load it below:" FontWeight="Bold" Margin="0,0,0,6"/>
+                                        <ListBox ItemsSource="{Binding DeviationHands}"
+                                                 DisplayMemberPath="HandId"
+                                                 Height="120"
+                                                 SelectionChanged="DeviationHandListBox_SelectionChanged"/>
+                                    </StackPanel>
+                                </DataTemplate>
+                            </DataGrid.RowDetailsTemplate>
                         </DataGrid>
                     </StackPanel>
                 </Grid>
+
+                <TextBlock Grid.Row="3" Text="Details" FontSize="16" FontWeight="Bold" HorizontalAlignment="Center" Margin="0,16,0,8"/>
+                <Border Grid.Row="3" Margin="0,36,0,0" Background="#F5F5F5" BorderBrush="#CCCCCC" BorderThickness="1" Padding="10">
+                    <ScrollViewer HorizontalScrollBarVisibility="Auto" VerticalScrollBarVisibility="Auto">
+                        <TextBox x:Name="SelectedDeviationText"
+                                 IsReadOnly="True"
+                                 IsReadOnlyCaretVisible="True"
+                                 BorderThickness="0"
+                                 Background="Transparent"
+                                 FontFamily="Consolas"
+                                 FontSize="12"
+                                 TextWrapping="NoWrap"
+                                 AcceptsReturn="True"
+                                 Text="Double-click a hand above, then click a Hand ID to see its details here."/>
+                    </ScrollViewer>
+                </Border>
             </Grid>
         </TabItem>
     </TabControl>

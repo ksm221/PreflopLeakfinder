@@ -8,12 +8,14 @@ using System.ComponentModel;
 using System.IO;
 using System.Runtime.CompilerServices;
 using System.Windows;
+using System.Windows.Controls;
 using System.Windows.Data;
+using System.Windows.Input;
+using System.Windows.Media;
 namespace PokerStudy.Wpf;
 
 public sealed record PositionStat(string Position, int Count, double Pct);
 public sealed record StackBucketStat(string Bucket, int Count, double Pct);
-public sealed record HandFreqStat(string Hand, int Count);
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
@@ -153,6 +155,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (IsLoaded) _ = ComputeSummaryAsync();
     }
 
+    void HandStatsGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    {
+        var dep = (DependencyObject)e.OriginalSource;
+        while (dep != null && dep is not DataGridRow)
+            dep = VisualTreeHelper.GetParent(dep);
+
+        if (dep is DataGridRow row)
+            row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible
+                ? Visibility.Collapsed
+                : Visibility.Visible;
+    }
+
+    void DeviationHandListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (sender is System.Windows.Controls.ListBox lb && lb.SelectedItem is HandEntity h)
+            SelectedDeviationText.Text = h.RawText;
+    }
+
     async void RefreshSummary_Click(object s, RoutedEventArgs e) => await ComputeSummaryAsync();
 
     async Task ComputeSummaryAsync()
@@ -240,7 +260,26 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             _stackStats.Add(new StackBucketStat($"{kv.Key}-{kv.Key + 4}bb", kv.Value, totalDeviations > 0 ? 100.0 * kv.Value / totalDeviations : 0));
 
         foreach (var kv in byHand.OrderByDescending(x => x.Value).Take(15))
-            _handStats.Add(new HandFreqStat(kv.Key, kv.Value));
+        {
+            var stat = new HandFreqStat(kv.Key, kv.Value);
+
+            stat.DeviationHands = hands
+                .Where(h => h.StartingHand == kv.Key)
+                .Where(h =>
+                {
+                    var acts = actionsByHand.TryGetValue(h.HandId, out var a)
+                        ? (IReadOnlyList<ActionEntity>)a
+                        : Array.Empty<ActionEntity>();
+
+                    var r = GtoMatcher.Evaluate(_gto, h, acts);
+                    return r != null && r.Verdict == "Deviation";
+                })
+                .OrderByDescending(h => h.PlayedAtUtc)
+                .ToList();
+
+            _handStats.Add(stat);
+        }
+
 
         var formatLabel = fmt == "HU" ? "HU" : fmt == "3W" ? "3W" : "HU + 3W";
         SummaryStatusText.Text = $"Based on {hands.Count:n0} hands (5bb+) | {formatLabel}";

@@ -50,4 +50,5 @@ public sealed class ImportedFileEntity
     public string Status { get; set; } = ""; public int HandsImported { get; set; }
     public string Error { get; set; } = "";
 }
+
 public sealed record ParsedHand(HandEntity Hand, List<ActionEntity> Actions);
