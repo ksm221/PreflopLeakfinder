@@ -63,7 +63,7 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         var gtoFilter = Selected(GtoFilter);
 
         await using var d = new PokerStudyDbContext(_db);
-        var query = d.Hands.AsNoTracking().AsQueryable();
+        var query = d.Hands.AsNoTracking().AsQueryable().Where(x => x.StackBb >= 5);
 
         if (f == "HU") query = query.Where(x => x.Format == GameFormat.HU);
         if (f == "3W") query = query.Where(x => x.Format == GameFormat.ThreeW);

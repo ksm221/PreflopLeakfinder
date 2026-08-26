@@ -1,12 +1,53 @@
 {
   "Version": 1,
   "WorkspaceRootPath": "C:\\Users\\User\\Desktop\\PreflopLeakFinder\\PreflopLeakfinder\\",
-  "Documents": [],
+  "Documents": [
+    {
+      "AbsoluteMoniker": "D:0:0:{22222222-2222-2222-2222-222222222222}|src\\PokerStudy.Wpf\\PokerStudy.Wpf.csproj|c:\\users\\user\\desktop\\preflopleakfinder\\preflopleakfinder\\src\\pokerstudy.wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}",
+      "RelativeMoniker": "D:0:0:{22222222-2222-2222-2222-222222222222}|src\\PokerStudy.Wpf\\PokerStudy.Wpf.csproj|solutionrelative:src\\pokerstudy.wpf\\mainwindow.xaml||{F11ACC28-31D1-4C80-A34B-F4E09D3D753C}"
+    },
+    {
+      "AbsoluteMoniker": "D:0:0:{22222222-2222-2222-2222-222222222222}|src\\PokerStudy.Wpf\\PokerStudy.Wpf.csproj|c:\\users\\user\\desktop\\preflopleakfinder\\preflopleakfinder\\src\\pokerstudy.wpf\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}",
+      "RelativeMoniker": "D:0:0:{22222222-2222-2222-2222-222222222222}|src\\PokerStudy.Wpf\\PokerStudy.Wpf.csproj|solutionrelative:src\\pokerstudy.wpf\\mainwindow.xaml.cs||{A6C744A8-0E4A-4FC6-886A-064283054674}"
+    }
+  ],
   "DocumentGroupContainers": [
     {
       "Orientation": 0,
       "VerticalTabListWidth": 256,
-      "DocumentGroups": []
+      "DocumentGroups": [
+        {
+          "DockedWidth": 200,
+          "SelectedChildIndex": 0,
+          "Children": [
+            {
+              "$type": "Document",
+              "DocumentIndex": 0,
+              "Title": "MainWindow.xaml",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\PreflopLeakFinder\\PreflopLeakfinder\\src\\PokerStudy.Wpf\\MainWindow.xaml",
+              "RelativeDocumentMoniker": "src\\PokerStudy.Wpf\\MainWindow.xaml",
+              "ToolTip": "C:\\Users\\User\\Desktop\\PreflopLeakFinder\\PreflopLeakfinder\\src\\PokerStudy.Wpf\\MainWindow.xaml",
+              "RelativeToolTip": "src\\PokerStudy.Wpf\\MainWindow.xaml",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003549|",
+              "WhenOpened": "2026-08-26T20:38:36.243Z",
+              "EditorCaption": ""
+            },
+            {
+              "$type": "Document",
+              "DocumentIndex": 1,
+              "Title": "MainWindow.xaml.cs",
+              "DocumentMoniker": "C:\\Users\\User\\Desktop\\PreflopLeakFinder\\PreflopLeakfinder\\src\\PokerStudy.Wpf\\MainWindow.xaml.cs",
+              "RelativeDocumentMoniker": "src\\PokerStudy.Wpf\\MainWindow.xaml.cs",
+              "ToolTip": "C:\\Users\\User\\Desktop\\PreflopLeakFinder\\PreflopLeakfinder\\src\\PokerStudy.Wpf\\MainWindow.xaml.cs",
+              "RelativeToolTip": "src\\PokerStudy.Wpf\\MainWindow.xaml.cs",
+              "ViewState": "AgIAACwAAAAAAAAAAAAmwEUAAABRAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.000738|",
+              "WhenOpened": "2026-08-26T20:36:15.444Z",
+              "EditorCaption": ""
+            }
+          ]
+        }
+      ]
     }
   ]
 }
