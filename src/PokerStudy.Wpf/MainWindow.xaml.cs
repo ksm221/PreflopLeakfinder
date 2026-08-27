@@ -14,8 +14,14 @@ using System.Windows.Input;
 using System.Windows.Media;
 namespace PokerStudy.Wpf;
 
-public sealed record PositionStat(string Position, int Count, double Pct);
-public sealed record StackBucketStat(string Bucket, int Count, double Pct);
+public sealed record PositionStat(string Position, int Count, double Pct)
+{
+    public List<HandEntity> DeviationHands { get; set; } = new();
+}
+public sealed record StackBucketStat(string Bucket, int Count, double Pct)
+{
+    public List<HandEntity> DeviationHands { get; set; } = new();
+}
 
 public partial class MainWindow : Window, INotifyPropertyChanged
 {
@@ -24,11 +30,13 @@ public partial class MainWindow : Window, INotifyPropertyChanged
     readonly ObservableCollection<PositionStat> _posStats = new();
     readonly ObservableCollection<StackBucketStat> _stackStats = new();
     readonly ObservableCollection<HandFreqStat> _handStats = new();
+    readonly ObservableCollection<HandEntity> _selectedHandDeviations = new();
     string _status = "Ready"; public string StatusText { get => _status; private set { _status = value; OnPropertyChanged(); } }
     public MainWindow()
     {
         InitializeComponent(); DataContext = this; _db = Path.Combine(AppContext.BaseDirectory, "PokerStudy.db"); HandsGrid.ItemsSource = _hands;
         PositionStatsGrid.ItemsSource = _posStats; StackStatsGrid.ItemsSource = _stackStats; HandStatsGrid.ItemsSource = _handStats;
+        SelectedHandGrid.ItemsSource = _selectedHandDeviations;
         var gtoPath = Path.Combine(AppContext.BaseDirectory, "Data", "gto_ranges.json");
         if (File.Exists(gtoPath)) { try { _gto = new GtoStore(gtoPath); } catch (Exception ex) { StatusText = $"GTO data failed to load: {ex.Message}"; } }
         Loaded += async (_, _) => await LoadPageAsync();
@@ -155,21 +163,33 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         if (IsLoaded) _ = ComputeSummaryAsync();
     }
 
-    void HandStatsGrid_MouseDoubleClick(object sender, MouseButtonEventArgs e)
+    void PositionStatsGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        var dep = (DependencyObject)e.OriginalSource;
-        while (dep != null && dep is not DataGridRow)
-            dep = VisualTreeHelper.GetParent(dep);
-
-        if (dep is DataGridRow row)
-            row.DetailsVisibility = row.DetailsVisibility == Visibility.Visible
-                ? Visibility.Collapsed
-                : Visibility.Visible;
+        _selectedHandDeviations.Clear();
+        SelectedDeviationText.Text = "Click a row in Selected Hand to see its details here.";
+        if (PositionStatsGrid.SelectedItem is PositionStat stat)
+            foreach (var h in stat.DeviationHands) _selectedHandDeviations.Add(h);
     }
 
-    void DeviationHandListBox_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    void StackStatsGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
     {
-        if (sender is System.Windows.Controls.ListBox lb && lb.SelectedItem is HandEntity h)
+        _selectedHandDeviations.Clear();
+        SelectedDeviationText.Text = "Click a row in Selected Hand to see its details here.";
+        if (StackStatsGrid.SelectedItem is StackBucketStat stat)
+            foreach (var h in stat.DeviationHands) _selectedHandDeviations.Add(h);
+    }
+
+    void HandStatsGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        _selectedHandDeviations.Clear();
+        SelectedDeviationText.Text = "Click a row in Selected Hand to see its details here.";
+        if (HandStatsGrid.SelectedItem is HandFreqStat stat)
+            foreach (var h in stat.DeviationHands) _selectedHandDeviations.Add(h);
+    }
+
+    void SelectedHandGrid_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
+    {
+        if (SelectedHandGrid.SelectedItem is HandEntity h)
             SelectedDeviationText.Text = h.RawText;
     }
 
@@ -221,9 +241,9 @@ public partial class MainWindow : Window, INotifyPropertyChanged
         int totalEvaluated = 0, totalDeviations = 0;
         // Keep format and position together. This is important when "All Formats"
         // is selected because HU and 3W both have an SB position.
-        var byPos = new Dictionary<(GameFormat Format, Position Position), int>();
-        var byBucket = new Dictionary<int, int>();
-        var byHand = new Dictionary<string, int>();
+        var byPos = new Dictionary<(GameFormat Format, Position Position), List<HandEntity>>();
+        var byBucket = new Dictionary<int, List<HandEntity>>();
+        var byHand = new Dictionary<string, List<HandEntity>>();
 
         foreach (var h in hands)
         {
@@ -234,12 +254,20 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             totalEvaluated++;
             if (r.Verdict != "Deviation") continue;
 
+            h.GtoVerdict = r.Verdict;
+            h.GtoDetail = string.IsNullOrEmpty(r.ChartLabel) ? r.Detail : $"{r.Detail} [{r.ChartLabel}]";
+
             totalDeviations++;
             var posKey = (h.Format, h.HeroPosition);
-            byPos[posKey] = byPos.GetValueOrDefault(posKey) + 1;
+            if (!byPos.TryGetValue(posKey, out var posList)) byPos[posKey] = posList = new List<HandEntity>();
+            posList.Add(h);
+
             var bucketLow = (int)Math.Floor(h.StackBb / 5) * 5;
-            byBucket[bucketLow] = byBucket.GetValueOrDefault(bucketLow) + 1;
-            byHand[h.StartingHand] = byHand.GetValueOrDefault(h.StartingHand) + 1;
+            if (!byBucket.TryGetValue(bucketLow, out var bucketList)) byBucket[bucketLow] = bucketList = new List<HandEntity>();
+            bucketList.Add(h);
+
+            if (!byHand.TryGetValue(h.StartingHand, out var handList)) byHand[h.StartingHand] = handList = new List<HandEntity>();
+            handList.Add(h);
         }
 
         SummaryHeadlineText.Text = totalEvaluated > 0
@@ -253,33 +281,24 @@ public partial class MainWindow : Window, INotifyPropertyChanged
             var label = kv.Key.Format == GameFormat.HU
                 ? $"HU {kv.Key.Position}"
                 : $"3W {kv.Key.Position}";
-            _posStats.Add(new PositionStat(label, kv.Value, totalDeviations > 0 ? 100.0 * kv.Value / totalDeviations : 0));
+            var stat = new PositionStat(label, kv.Value.Count, totalDeviations > 0 ? 100.0 * kv.Value.Count / totalDeviations : 0);
+            stat.DeviationHands = kv.Value.OrderByDescending(h => h.PlayedAtUtc).ToList();
+            _posStats.Add(stat);
         }
 
         foreach (var kv in byBucket.OrderBy(x => x.Key))
-            _stackStats.Add(new StackBucketStat($"{kv.Key}-{kv.Key + 4}bb", kv.Value, totalDeviations > 0 ? 100.0 * kv.Value / totalDeviations : 0));
-
-        foreach (var kv in byHand.OrderByDescending(x => x.Value).Take(15))
         {
-            var stat = new HandFreqStat(kv.Key, kv.Value);
-
-            stat.DeviationHands = hands
-                .Where(h => h.StartingHand == kv.Key)
-                .Where(h =>
-                {
-                    var acts = actionsByHand.TryGetValue(h.HandId, out var a)
-                        ? (IReadOnlyList<ActionEntity>)a
-                        : Array.Empty<ActionEntity>();
-
-                    var r = GtoMatcher.Evaluate(_gto, h, acts);
-                    return r != null && r.Verdict == "Deviation";
-                })
-                .OrderByDescending(h => h.PlayedAtUtc)
-                .ToList();
-
-            _handStats.Add(stat);
+            var stat = new StackBucketStat($"{kv.Key}-{kv.Key + 4}bb", kv.Value.Count, totalDeviations > 0 ? 100.0 * kv.Value.Count / totalDeviations : 0);
+            stat.DeviationHands = kv.Value.OrderByDescending(h => h.PlayedAtUtc).ToList();
+            _stackStats.Add(stat);
         }
 
+        foreach (var kv in byHand.OrderByDescending(x => x.Value.Count).Take(15))
+        {
+            var stat = new HandFreqStat(kv.Key, kv.Value.Count);
+            stat.DeviationHands = kv.Value.OrderByDescending(h => h.PlayedAtUtc).ToList();
+            _handStats.Add(stat);
+        }
 
         var formatLabel = fmt == "HU" ? "HU" : fmt == "3W" ? "3W" : "HU + 3W";
         SummaryStatusText.Text = $"Based on {hands.Count:n0} hands (5bb+) | {formatLabel}";
