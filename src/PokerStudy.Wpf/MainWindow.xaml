@@ -153,6 +153,7 @@
                     <DataGrid.Columns>
                         <DataGridTextColumn Header="ID" Binding="{Binding HandId}" Width="220"/>
                         <DataGridTextColumn Header="Position" Binding="{Binding HeroPosition}" Width="90"/>
+                        <DataGridTextColumn Header="Hand" Binding="{Binding StartingHand}" Width="70"/>
                         <DataGridTextColumn Header="Stack Depth" Binding="{Binding StackBb,StringFormat=0}" Width="100"/>
                         <DataGridTextColumn Header="Action" Binding="{Binding HeroAction}" Width="100"/>
                         <DataGridTextColumn Header="GTO Detail" Binding="{Binding GtoDetail}" Width="*"/>
