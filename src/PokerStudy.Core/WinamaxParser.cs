@@ -48,6 +48,7 @@ public sealed class WinamaxParser
             var rest = line[player.Length..].TrimStart();
             ActionType? t = null; decimal amt = 0; bool ai = rest.Contains("all-in", StringComparison.OrdinalIgnoreCase);
             if (rest.StartsWith("folds", StringComparison.OrdinalIgnoreCase)) t = ActionType.Fold;
+            else if (rest.StartsWith("checks", StringComparison.OrdinalIgnoreCase)) t = ActionType.Check;
             else if (rest.StartsWith("calls ", StringComparison.OrdinalIgnoreCase)) { t = ActionType.Call; amt = Amt(rest); }
             else if (rest.StartsWith("raises ", StringComparison.OrdinalIgnoreCase)) { t = ai ? ActionType.AllIn : ActionType.Raise; amt = To(rest); }
             if (t == null) continue; var p = seats.FirstOrDefault(x => x.Name.Equals(player, StringComparison.OrdinalIgnoreCase)); var pos = p == null ? (Position?)null : Pos(p.Seat, button, format, seats, sb);

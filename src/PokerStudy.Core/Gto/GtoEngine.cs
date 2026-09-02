@@ -108,6 +108,12 @@ public static class GtoMatcher
         var primary = dist.OrderByDescending(kv => kv.Value).First();
         bool IsRaiseCat(string k) => k == "RaiseSmall" || k == "RaiseBig";
 
+        // The digitized charts only ever have one "passive" bucket labeled "Call", even for spots where
+        // the technically-correct term is "Check" (checking behind a limp isn't calling anything, since
+        // no bet needs matching). Relabel it for display whenever hero is actually facing a limp.
+        var facingLimp = actualChain.Count > 0 && actualChain[^1].Shape == "Limp";
+        string ActionLabel(string a) => (a == "Call" && facingLimp) ? "Check" : a;
+
         // Shoving over an opponent who is already effectively all-in isn't a "raise" in GTO terms -
         // with no one left to act, it's the same decision as calling.
         var priorWasAllIn = actualChain.Count > 0 && actualChain[^1].Shape == "AllIn";
@@ -127,23 +133,24 @@ public static class GtoMatcher
         }
 
         const int MixThreshold = 20;
+        var primaryLabel = ActionLabel(primary.Key);
 
         string verdict, detail;
         if (heroPct >= MixThreshold && heroMatchesPrimary)
         {
-            verdict = "Matches GTO"; detail = $"{primary.Key} {primary.Value}% (your action)";
+            verdict = "Matches GTO"; detail = $"{primaryLabel} {primary.Value}% (your action)";
         }
         else if (heroPct >= MixThreshold)
         {
-            verdict = "Partial match"; detail = $"You took a {heroPct}% mixed-strategy option; GTO favors {primary.Key} {primary.Value}%";
+            verdict = "Partial match"; detail = $"You took a {heroPct}% mixed-strategy option; GTO favors {primaryLabel} {primary.Value}%";
         }
         else if (heroPct > 0)
         {
-            verdict = "Deviation"; detail = $"Only a {heroPct}% minor option in GTO (below {MixThreshold}% mix threshold); favors {primary.Key} {primary.Value}%";
+            verdict = "Deviation"; detail = $"Only a {heroPct}% minor option in GTO (below {MixThreshold}% mix threshold); favors {primaryLabel} {primary.Value}%";
         }
         else
         {
-            verdict = "Deviation"; detail = $"GTO recommends {primary.Key} {primary.Value}% (you {hand.HeroAction})";
+            verdict = "Deviation"; detail = $"GTO recommends {primaryLabel} {primary.Value}% (you {hand.HeroAction})";
         }
         return new GtoResult(verdict, detail, Label(chart));
     }
@@ -153,6 +160,7 @@ public static class GtoMatcher
         ActionType.Fold => "Fold",
         ActionType.Call => "Call",
         ActionType.Limp => "Call",
+        ActionType.Check => "Call",
         ActionType.AllIn => "AllIn",
         _ => null
     };

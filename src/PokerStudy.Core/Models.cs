@@ -23,6 +23,7 @@ public sealed class HandEntity
     public decimal? PriorActionBb { get; set; }
     [NotMapped] public string GtoVerdict { get; set; } = "";
     [NotMapped] public string GtoDetail { get; set; } = "";
+    [NotMapped] public string PositionLabel => $"{(Format == GameFormat.HU ? "HU" : "3W")} {HeroPosition}";
 }
 public sealed class ActionEntity
 {
